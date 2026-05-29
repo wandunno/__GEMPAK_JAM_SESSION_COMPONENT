@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gempak Jam Session — Premium Live GitHub Integration</title>
+    <style>
+      .gmpke-wrap *,
+      .gmpke-wrap *::before,
+      .gmpke-wrap *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      .gmpke-wrap {
+        /* ── SISTEM WARNA PREMIUM DARK & MAGENTA ── */
+        --e-bg: #0d0614;
+        --e-surface: #150d1e;
+        --e-surface2: #22162f;
+        --e-surface3: #2d1e3d;
+        --e-border: rgba(224, 30, 131, 0.15);
+        --e-border-med: rgba(224, 30, 131, 0.3);
+        --e-text: #ffffff;
+        --e-muted: #d0c2de;
+        --e-faint: #9d8ba6;
+        --e-accent: #e01e83;
+        --e-accent-bg: rgba(224, 30, 131, 0.12);
+        --e-num-ghost: rgba(224, 30, 131, 0.08);
+        --e-radius: 12px;
+        --e-radius-sm: 7px;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        background: var(--e-bg);
+        padding: 24px 20px;
+        min-height: 100px;
+      }
+
+      /* ── HEADER ── */
+      .gmpke-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .gmpke-show-name {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #ffffff;
+        font-weight: bold;
+      }
+      .gmpke-season-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .gmpke-season-label {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--e-muted);
+        font-weight: 500;
+      }
+      .gmpke-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--e-accent);
+      }
+      .gmpke-new-pill {
+        font-size: 10px;
+        font-weight: 600;
+        background: var(--e-accent);
+        color: #fff;
+        padding: 3px 9px;
+        border-radius: 20px;
+        letter-spacing: 0.06em;
+      }
+
+      /* ── FEATURED HERO (SPOTLIGHT) ── */
+      .gmpke-featured {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        background: var(--e-surface);
+        border-radius: var(--e-radius);
+        border: 1px solid var(--e-border);
+        overflow: hidden;
+        margin-bottom: 12px;
+        cursor: pointer;
+        position: relative;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .gmpke-featured.gmpke-ready {
+        opacity: 1;
+      }
+      .gmpke-featured:hover .gmpke-feat-img {
+        transform: scale(1.03);
+      }
+
+      .gmpke-feat-thumb-wrap {
+        overflow: hidden;
+        background: #111;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+      }
+      .gmpke-feat-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.35s ease;
+      }
+      .gmpke-feat-play {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .gmpke-feat-play-btn {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.2s,
+          background 0.2s;
+        box-shadow: 0 0 15px rgba(224, 30, 131, 0.4);
+      }
+      .gmpke-feat-play-btn svg {
+        transform: translateX(2px);
+        display: block;
+      }
+      .gmpke-featured:hover .gmpke-feat-play-btn {
+        transform: scale(1.12);
+        background: #ffffff;
+      }
+
+      .gmpke-feat-info {
+        padding: 24px 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .gmpke-feat-ghost-num {
+        position: absolute;
+        right: -10px;
+        bottom: -20px;
+        font-size: 120px;
+        font-family: "Georgia", serif;
+        font-weight: bold;
+        color: var(--e-num-ghost);
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
+      }
+      .gmpke-feat-ep {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--e-accent);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .gmpke-feat-title {
+        font-size: 20px;
+        color: #ffffff;
+        line-height: 1.3;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+      .gmpke-feat-desc {
+        font-size: 13px;
+        color: var(--e-muted);
+        line-height: 1.65;
+        margin-bottom: 16px;
+      }
+      .gmpke-feat-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: #ffffff;
+        border: 1.5px solid var(--e-accent);
+        background: var(--e-accent);
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition:
+          background 0.18s,
+          border-color 0.18s;
+        align-self: flex-start;
+        cursor: pointer;
+      }
+      .gmpke-featured:hover .gmpke-feat-cta {
+        background: #ff2a9d;
+        border-color: #ff2a9d;
+      }
+
+      /* ── TRACKLIST ── */
+      .gmpke-tracklist {
+        background: var(--e-surface);
+        border-radius: var(--e-radius);
+        border: 1px solid var(--e-border);
+        overflow: hidden;
+      }
+      .gmpke-track-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 16px;
+        border-bottom: 1px solid var(--e-border);
+        background: var(--e-surface2);
+      }
+      .gmpke-track-head-label {
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--e-faint);
+      }
+      .gmpke-track-line {
+        flex: 1;
+        height: 1px;
+        background: var(--e-border);
+      }
+      .gmpke-track-count {
+        font-size: 10px;
+        color: var(--e-faint);
+      }
+      .gmpke-track-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--e-border);
+        cursor: pointer;
+        transition: background 0.15s;
+        position: relative;
+      }
+      .gmpke-track-item:last-child {
+        border-bottom: none;
+      }
+      .gmpke-track-item:hover {
+        background: var(--e-surface2);
+      }
+      .gmpke-track-item.gmpke-active {
+        background: var(--e-accent-bg);
+        border-left: 3px solid var(--e-accent);
+        padding-left: 13px;
+      }
+      .gmpke-track-num {
+        font-size: 13px;
+        font-family: "Georgia", serif;
+        color: var(--e-accent);
+        min-width: 20px;
+        text-align: right;
+        font-weight: bold;
+      }
+      .gmpke-track-thumb {
+        width: 64px;
+        min-width: 64px;
+        aspect-ratio: 16/9;
+        border-radius: var(--e-radius-sm);
+        overflow: hidden;
+        background: var(--e-surface2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .gmpke-track-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .gmpke-track-info {
+        flex: 1;
+      }
+      .gmpke-track-title {
+        font-size: 13px;
+        color: #ffffff;
+        margin-bottom: 2px;
+        line-height: 1.35;
+        font-weight: 500;
+      }
+      .gmpke-track-sub {
+        font-size: 11px;
+        color: var(--e-faint);
+      }
+      .gmpke-track-play {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid var(--e-border-med);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: transparent;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .gmpke-track-item:hover .gmpke-track-play {
+        background: var(--e-accent);
+        border-color: var(--e-accent);
+      }
+      .gmpke-track-item:hover .gmpke-track-play svg polygon {
+        fill: #fff;
+      }
+
+      /* ── KOLEKSI LAMA (2 LAYERS BENTO HORIZONTAL SCROLL) ── */
+      .gmpke-old-section {
+        margin-top: 14px;
+        position: relative;
+      }
+      .gmpke-old-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .gmpke-old-lbl {
+        font-size: 10px;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+        color: #ffffff;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+      .gmpke-old-line {
+        flex: 1;
+        height: 1px;
+        background: var(--e-border);
+      }
+
+      .gmpke-old-scroll-container {
+        position: relative;
+        width: 100%;
+      }
+      .gmpke-old-chips {
+        display: grid;
+        grid-template-rows: repeat(2, auto);
+        grid-auto-flow: column;
+        gap: 10px;
+        overflow-x: auto;
+        width: 100%;
+        padding: 4px 0 16px 0;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+      }
+      .gmpke-old-chips::-webkit-scrollbar {
+        display: none;
+      }
+
+      .gmpke-old-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        background: var(--e-surface);
+        border: 1px solid var(--e-border-med);
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s,
+          transform 0.1s;
+        width: 280px;
+      }
+      .gmpke-old-chip:hover {
+        background: var(--e-surface2);
+        border-color: var(--e-accent);
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(224, 30, 131, 0.2);
+      }
+      .gmpke-old-chip-thumb {
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--e-surface3);
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .gmpke-old-chip-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .gmpke-old-chip-info {
+        overflow: hidden;
+        flex: 1;
+      }
+      .gmpke-old-chip-label {
+        font-size: 12px;
+        color: #ffffff;
+        font-weight: 500;
+        line-height: 1.2;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .gmpke-old-chip-sub {
+        font-size: 10px;
+        color: var(--e-faint);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ── PLAYLIST CTA BUTTON ── */
+      .gmpke-playlist-footer {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .gmpke-btn-playlist {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #cc181e;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        transition:
+          background 0.2s,
+          transform 0.2s;
+      }
+      .gmpke-btn-playlist:hover {
+        background: #b01318;
+        transform: translateY(-1px);
+      }
+
+      /* ── MODAL LAYOUT ── */
+      .gmpke-modal-back {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 5, 15, 0.9);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .gmpke-modal-back.gmpke-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .gmpke-modal {
+        background: var(--e-surface);
+        border-radius: var(--e-radius);
+        width: 100%;
+        max-width: 820px;
+        overflow: hidden;
+        transform: translateY(14px) scale(0.97);
+        transition: transform 0.28s ease;
+        border: 1px solid var(--e-border-med);
+        box-shadow: 0 0 30px rgba(224, 30, 131, 0.3);
+      }
+      .gmpke-modal-back.gmpke-open .gmpke-modal {
+        transform: none;
+      }
+      .gmpke-modal-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--e-border);
+      }
+      .gmpke-modal-ep {
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--e-accent);
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .gmpke-modal-title {
+        font-size: 14px;
+        color: #ffffff;
+        font-weight: bold;
+      }
+      .gmpke-modal-x {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid var(--e-border-med);
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 15px;
+        transition: background 0.15s;
+        flex-shrink: 0;
+      }
+      .gmpke-modal-x:hover {
+        background: var(--e-accent);
+        border-color: var(--e-accent);
+      }
+      .gmpke-modal-video {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+      }
+      .gmpke-modal-video iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      @media (max-width: 768px) {
+        .gmpke-featured {
+          grid-template-columns: 1fr;
+        }
+        .gmpke-feat-info {
+          padding: 18px 20px 20px;
+        }
+        .gmpke-feat-ghost-num {
+          font-size: 80px;
+        }
+        .gmpke-feat-title {
+          font-size: 18px;
+        }
+      }
+      @media (max-width: 600px) {
+        .gmpke-wrap {
+          padding: 14px 12px;
+        }
+        .gmpke-track-thumb {
+          width: 52px;
+          min-width: 52px;
+        }
+        .gmpke-track-title {
+          font-size: 12px;
+        }
+        .gmpke-old-chip {
+          width: 240px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="gmpke-wrap" id="gmpkLayoutE">
+      <div class="gmpke-header">
+        <span class="gmpke-show-name">Gempak Jam Session</span>
+        <div class="gmpke-season-meta">
+          <span class="gmpke-season-label">Season 5</span>
+          <div class="gmpke-dot"></div>
+          <span class="gmpke-new-pill">Terbaru</span>
+        </div>
+      </div>
+
+      <div class="gmpke-featured" id="gmpkeFeatured">
+        <div class="gmpke-feat-thumb-wrap">
+          <img class="gmpke-feat-img" id="gmpkeFeatImg" src="" alt="" />
+          <div class="gmpke-feat-play">
+            <div class="gmpke-feat-play-btn">
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <polygon points="5,3 15,9 5,15" fill="#0d0614" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="gmpke-feat-info">
+          <span class="gmpke-feat-ghost-num" id="gmpkeGhostNum">-</span>
+          <p class="gmpke-feat-ep" id="gmpkeFeatEp">Memuatkan...</p>
+          <p class="gmpke-feat-title" id="gmpkeFeatTitle">
+            Sila tunggu sebentar...
+          </p>
+          <p class="gmpke-feat-desc" id="gmpkeFeatDesc"></p>
+          <span class="gmpke-feat-cta">
+            <svg width="12" height="12" viewBox="0 0 12 12">
+              <polygon points="2,1 11,6 2,11" fill="currentColor" />
+            </svg>
+            Tonton Sekarang
+          </span>
+        </div>
+      </div>
+
+      <div class="gmpke-tracklist">
+        <div class="gmpke-track-head">
+          <span class="gmpke-track-head-label">Semua Episod</span>
+          <div class="gmpke-track-line"></div>
+          <span class="gmpke-track-count" id="gmpkeTrackCount">0 episod</span>
+        </div>
+        <div id="gmpkeTrackBody"></div>
+      </div>
+
+      <div class="gmpke-old-section">
+        <div class="gmpke-old-header">
+          <span class="gmpke-old-lbl">Koleksi Gempak Jam Session</span>
+          <div class="gmpke-old-line"></div>
+        </div>
+        <div class="gmpke-old-scroll-container">
+          <div class="gmpke-old-chips" id="gmpkeOldChips"></div>
+        </div>
+      </div>
+
+      <div class="gmpke-playlist-footer">
+        <a
+          class="gmpke-btn-playlist"
+          href="https://youtube.com/playlist?list=PLYlnLDZCVKomDH1_lMWwCMYO2T5fXTHjO"
+          target="_blank"
+          rel="noopener"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff">
+            <path
+              d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 13V8l5 4-5 4z"
+            />
+          </svg>
+          Lihat Semua di YouTube Playlist
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="gmpke-modal-back"
+      id="gmpkeModal"
+      onclick="gmpkeCloseBack(event)"
+    >
+      <div class="gmpke-modal">
+        <div class="gmpke-modal-bar">
+          <div>
+            <p class="gmpke-modal-ep" id="gmpkeModalEp"></p>
+            <p class="gmpke-modal-title" id="gmpkeModalTitle"></p>
+          </div>
+          <button class="gmpke-modal-x" onclick="gmpkeCloseModal()">✕</button>
+        </div>
+        <div class="gmpke-modal-video">
+          <iframe
+            id="gmpkeIframe"
+            src=""
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        // Pautan Github raw selepas repository anda ditukar status ke PUBLIC
+        var JSON_URL =
+          "https://raw.githubusercontent.com/wandunno/__GEMPAK_JAM_SESSION_COMPONENT/main/__DATA_ENTRY_GITHUB_JSON/gempak-jam-session.json";
+
+        // Gambar sandaran rasmi jika tiada imej mini youtube dijumpai
+        var DEFAULT_LOGO =
+          "https://raw.githubusercontent.com/wandunno/__GEMPAK_JAM_SESSION_COMPONENT/main/__HTML_CSS_JAVASCRIPT/logo.png";
+
+        var episodes = [];
+        var oldSeasons = [];
+        var current = 0;
+
+        // Memulakan proses memanggil fail JSON dari GitHub rasmi anda
+        fetch(JSON_URL)
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            episodes = data.episodes || [];
+            oldSeasons = data.oldSeasons || [];
+
+            document
+              .getElementById("gmpkeFeatured")
+              .classList.add("gmpke-ready");
+            gmpkeSelect(0);
+            buildOld();
+          })
+          .catch(function (err) {
+            console.error("Sangkut ketika memanggil fail JSON:", err);
+            document.getElementById("gmpkeFeatTitle").textContent =
+              "Ralat: Sila pastikan tetapan repository di GitHub sudah ditukar ke Public.";
+          });
+
+        function buildTrack() {
+          var body = document.getElementById("gmpkeTrackBody");
+          body.innerHTML = "";
+          document.getElementById("gmpkeTrackCount").textContent =
+            episodes.length + " episod";
+
+          episodes.forEach(function (ep, i) {
+            var assignedEpNum = episodes.length - i;
+            var epLabel = "Episod " + assignedEpNum;
+
+            var row = document.createElement("div");
+            row.className =
+              "gmpke-track-item" + (i === current ? " gmpke-active" : "");
+            row.onclick = function () {
+              gmpkeSelect(i);
+            };
+            row.innerHTML =
+              '<span class="gmpke-track-num">' +
+              assignedEpNum +
+              "</span>" +
+              '<div class="gmpke-track-thumb"><img src="https://img.youtube.com/vi/' +
+              ep.id +
+              '/mqdefault.jpg" alt="" onerror="this.src=\'' +
+              DEFAULT_LOGO +
+              '\'" loading="lazy"/></div>' +
+              '<div class="gmpke-track-info">' +
+              '<p class="gmpke-track-title">' +
+              ep.title +
+              "</p>" +
+              '<p class="gmpke-track-sub">' +
+              epLabel +
+              " · Season 5</p>" +
+              "</div>" +
+              '<div class="gmpke-track-play"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="var(--e-faint)"/></svg></div>';
+            body.appendChild(row);
+          });
+        }
+
+        function buildOld() {
+          var chips = document.getElementById("gmpkeOldChips");
+          chips.innerHTML = "";
+          oldSeasons.forEach(function (s) {
+            var imgUrl = s.id
+              ? "https://img.youtube.com/vi/" + s.id + "/mqdefault.jpg"
+              : DEFAULT_LOGO;
+            var c = document.createElement("div");
+            c.className = "gmpke-old-chip";
+            c.onclick = function () {
+              gmpkeOpenModal(s.id, "Koleksi", s.label);
+            };
+            c.innerHTML =
+              '<div class="gmpke-old-chip-thumb"><img src="' +
+              imgUrl +
+              '" onerror="this.src=\'' +
+              DEFAULT_LOGO +
+              '\'" alt="" loading="lazy"/></div>' +
+              '<div class="gmpke-old-chip-info">' +
+              '<p class="gmpke-old-chip-label">' +
+              s.label +
+              "</p>" +
+              '<p class="gmpke-old-chip-sub">' +
+              s.sub +
+              "</p>" +
+              "</div>";
+            chips.appendChild(c);
+          });
+        }
+
+        window.gmpkeSelect = function (i) {
+          if (!episodes[i]) return;
+          current = i;
+          var ep = episodes[i];
+          var assignedEpNum = episodes.length - i;
+          var epLabel = "Episod " + assignedEpNum;
+
+          var featEl = document.getElementById("gmpkeFeatured");
+          featEl.onclick = function () {
+            gmpkeOpenModal(ep.id, epLabel, ep.title);
+          };
+          document.getElementById("gmpkeFeatImg").src =
+            "https://img.youtube.com/vi/" + ep.id + "/maxresdefault.jpg";
+          document.getElementById("gmpkeFeatImg").onerror = function () {
+            this.src = "https://img.youtube.com/vi/" + ep.id + "/mqdefault.jpg";
+          };
+          document.getElementById("gmpkeFeatEp").textContent = epLabel;
+          document.getElementById("gmpkeFeatTitle").textContent = ep.title;
+          document.getElementById("gmpkeFeatDesc").textContent = ep.desc || "";
+          document.getElementById("gmpkeGhostNum").textContent = assignedEpNum;
+          buildTrack();
+        };
+
+        window.gmpkeOpenModal = function (vid, ep, title) {
+          if (!vid) return;
+          document.getElementById("gmpkeModalEp").textContent = ep;
+          document.getElementById("gmpkeModalTitle").textContent = title;
+          document.getElementById("gmpkeIframe").src =
+            "https://www.youtube.com/embed/" + vid + "?autoplay=1&rel=0";
+          document.getElementById("gmpkeModal").classList.add("gmpke-open");
+          document.body.style.overflow = "hidden";
+        };
+
+        window.gmpkeCloseModal = function () {
+          document.getElementById("gmpkeModal").classList.remove("gmpke-open");
+          document.getElementById("gmpkeIframe").src = "";
+          document.body.style.overflow = "";
+        };
+
+        window.gmpkeCloseBack = function (e) {
+          if (e.target === document.getElementById("gmpkeModal"))
+            gmpkeCloseModal();
+        };
+
+        document.addEventListener("keydown", function (e) {
+          if (
+            e.key === "Escape" &&
+            document
+              .getElementById("gmpkeModal")
+              .classList.contains("gmpke-open")
+          ) {
+            gmpkeCloseModal();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
