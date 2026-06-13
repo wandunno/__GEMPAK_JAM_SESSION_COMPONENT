@@ -65,15 +65,6 @@
         border-radius: 50%;
         background: var(--e-accent);
       }
-      .gmpke-new-pill {
-        font-size: 10px;
-        font-weight: 600;
-        background: var(--e-accent);
-        color: #fff;
-        padding: 3px 9px;
-        border-radius: 20px;
-        letter-spacing: 0.06em;
-      }
 
       /* ── FEATURED HERO (SPOTLIGHT) ── */
       .gmpke-featured {
@@ -162,14 +153,35 @@
         pointer-events: none;
         user-select: none;
       }
+
+      /* Kontainer untuk Episod & Tagging Terbaru sebaris */
+      .gmpke-feat-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
       .gmpke-feat-ep {
         font-size: 10px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--e-accent);
         font-weight: 600;
-        margin-bottom: 8px;
       }
+
+      /* Tagging Terbaru di sebelah nombor episod */
+      .gmpke-new-pill {
+        font-size: 9px;
+        font-weight: 600;
+        background: var(--e-accent);
+        color: #fff;
+        padding: 2px 7px;
+        border-radius: 20px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
       .gmpke-feat-title {
         font-size: 20px;
         color: #ffffff;
@@ -316,7 +328,7 @@
         fill: #fff;
       }
 
-      /* ── KOLEKSI LAMA (2 LAYERS BENTO HORIZONTAL SCROLL) ── */
+      /* ── KOLEKSI LAMA ── */
       .gmpke-old-section {
         margin-top: 14px;
         position: relative;
@@ -568,7 +580,6 @@
         <div class="gmpke-season-meta">
           <span class="gmpke-season-label">Season 5</span>
           <div class="gmpke-dot"></div>
-          <span class="gmpke-new-pill">Terbaru</span>
         </div>
       </div>
 
@@ -585,7 +596,12 @@
         </div>
         <div class="gmpke-feat-info">
           <span class="gmpke-feat-ghost-num" id="gmpkeGhostNum">-</span>
-          <p class="gmpke-feat-ep" id="gmpkeFeatEp">Memuatkan...</p>
+
+          <div class="gmpke-feat-meta-row">
+            <p class="gmpke-feat-ep" id="gmpkeFeatEp">Memuatkan...</p>
+            <span class="gmpke-new-pill">Terbaru</span>
+          </div>
+
           <p class="gmpke-feat-title" id="gmpkeFeatTitle">
             Sila tunggu sebentar...
           </p>
@@ -661,11 +677,8 @@
 
     <script>
       (function () {
-        // Pautan Github raw selepas repository anda ditukar status ke PUBLIC
         var JSON_URL =
           "https://raw.githubusercontent.com/wandunno/__GEMPAK_JAM_SESSION_COMPONENT/main/__DATA_ENTRY_GITHUB_JSON/gempak-jam-session.json";
-
-        // Gambar sandaran rasmi jika tiada imej mini youtube dijumpai
         var DEFAULT_LOGO =
           "https://raw.githubusercontent.com/wandunno/__GEMPAK_JAM_SESSION_COMPONENT/main/__HTML_CSS_JAVASCRIPT/logo.png";
 
@@ -673,7 +686,6 @@
         var oldSeasons = [];
         var current = 0;
 
-        // Memulakan proses memanggil fail JSON dari GitHub rasmi anda
         fetch(JSON_URL)
           .then(function (res) {
             return res.json();
@@ -691,7 +703,7 @@
           .catch(function (err) {
             console.error("Sangkut ketika memanggil fail JSON:", err);
             document.getElementById("gmpkeFeatTitle").textContent =
-              "Ralat: Sila pastikan tetapan repository di GitHub sudah ditukar ke Public.";
+              "Ralat: Sila kemaskini fail JSON di GitHub.";
           });
 
         function buildTrack() {
