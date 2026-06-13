@@ -781,10 +781,24 @@
           var assignedEpNum = episodes.length - i;
           var epLabel = "Episod " + assignedEpNum;
 
-          var featEl = document.getElementById("gmpkeFeatured");
-          featEl.onclick = function () {
+          // ── KEMASKINI SKOP KLIK: HADKAN PADA POSTER & BUTANG CTA SAHAJA ──
+          var openAction = function (e) {
+            e.stopPropagation();
             gmpkeOpenModal(ep.id, epLabel, ep.title);
           };
+
+          var featEl = document.getElementById("gmpkeFeatured");
+          if (featEl) {
+            featEl.onclick = null; // Tutup klik global pada box besar
+          }
+
+          var featImgWrap = document.querySelector(".gmpke-feat-thumb-wrap");
+          var featCta = document.querySelector(".gmpke-feat-cta");
+
+          if (featImgWrap) featImgWrap.onclick = openAction;
+          if (featCta) featCta.onclick = openAction;
+          // ────────────────────────────────────────────────────────────────
+
           document.getElementById("gmpkeFeatImg").src =
             "https://img.youtube.com/vi/" + ep.id + "/maxresdefault.jpg";
           document.getElementById("gmpkeFeatImg").onerror = function () {
